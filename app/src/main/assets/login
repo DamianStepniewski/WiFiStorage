@@ -1,0 +1,36 @@
+//@ sourceURL=login.js
+$(document).keypress(function(e){
+    if (e.which == 13){
+        $("#button_login").click();
+    }
+});
+
+$("#button_login").click(function() {
+	$("#password_incorrect").fadeOut(200);
+    $("#button_login").fadeOut(200, function() {
+    	$("#spinner").fadeIn(200);
+    	$.get("", {do:"login", pass:$("#password").val()}, function( data ) {
+    		var response = JSON.parse(data);
+    		if (response["status"] == false) {
+    			$("#password_incorrect").fadeIn(200);
+    			$("#spinner").fadeOut(200, function() {
+    				$("#button_login").fadeIn(200);
+    			});
+    		} else if (response["status"] == true){
+    			$("#wrapper").fadeOut(500, function() {
+    				loadDirectory("",response["ssid"]);
+    				$("#wrapper").fadeIn(500);
+    			});
+    		}
+   		});
+    });
+});
+
+function loadDirectory(path, ssid) {
+	$.get("", {do:"dir", ssid:ssid, path:path}, function(data) {
+		var response = JSON.parse(data);
+		if (response["status"] == true) {
+			$("#wrapper").html(response["html"]);
+		}
+	});
+}
